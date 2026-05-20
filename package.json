@@ -1,0 +1,31 @@
+{
+  "name": "geopay-dapp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "vercel-install": "npm install --legacy-peer-deps"
+  },
+  "dependencies": {
+    "@mysten/dapp-kit": "^0.14.41",
+    "@mysten/sui": "^1.21.1",
+    "@mysten/walrus": "^1.1.7",
+    "@tailwindcss/vite": "^4.0.0",
+    "@tanstack/react-query": "^5.66.0",
+    "clsx": "^2.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
+  }
+}
