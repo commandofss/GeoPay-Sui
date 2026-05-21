@@ -1,13 +1,2079 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GeoPay</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GeoPay — Decentralized Spatial Regulatory Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --blue: #1a3c5e;
+    --blue-light: #E6F1FB;
+    --gold: #c8961e;
+    --gold-light: #FFF8E7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --bg: #f8f9f7;
+    --card: #ffffff;
+    --text: #1a1f1c;
+    --text-muted: #6b7570;
+    --border: #e0e5e2;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ===== HEADER ===== */
+  header {
+    background: var(--green-dark);
+    color: #fff;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 16px; font-weight: 700; }
+  .logo-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .wallet-pill { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-family: var(--mono); display: flex; align-items: center; gap: 6px; }
+  .wallet-dot { width: 7px; height: 7px; border-radius: 50%; background: #5DCAA5; }
+  .live-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-family: var(--mono); }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--green-dark) 0%, #1a3c5e 100%);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero-tag { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 4px 14px; font-size: 11px; font-family: var(--mono); margin-bottom: 1rem; letter-spacing: 1px; }
+  .hero h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.2; }
+  .hero p { font-size: 14px; opacity: 0.8; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.6; }
+  .hero-stats { display: flex; justify-content: center; gap: 2.5rem; margin-top: 1.5rem; }
+  .hero-stat-value { font-size: 22px; font-weight: 600; font-family: var(--mono); }
+  .hero-stat-label { font-size: 11px; opacity: 0.7; margin-top: 2px; letter-spacing: 0.5px; }
+
+  /* ===== WORKFLOW ===== */
+  .workflow-bar {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+  }
+  .wf-step { flex: 1; min-width: 120px; padding: 12px 8px; text-align: center; border-right: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
+  .wf-step:last-child { border-right: none; }
+  .wf-step.done { background: var(--green-light); }
+  .wf-step.active { background: var(--green); color: #fff; }
+  .wf-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text-muted); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; }
+  .wf-step.active .wf-num { background: rgba(255,255,255,0.3); color: #fff; }
+  .wf-step.done .wf-num { background: var(--green); color: #fff; }
+  .wf-label { font-size: 11px; font-weight: 500; }
+  .wf-step.active .wf-label { color: #fff; }
+  .wf-step.done .wf-label { color: var(--green-dark); }
+
+  /* ===== CONTAINER ===== */
+  .container { max-width: 860px; margin: 0 auto; padding: 1.5rem; }
+
+  /* ===== TABS ===== */
+  .tabs { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+  .tab { flex: 1; padding: 11px 6px; border: none; background: none; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s; border-right: 1px solid var(--border); }
+  .tab:last-child { border-right: none; }
+  .tab:hover { background: var(--bg); color: var(--text); }
+  .tab.active { background: var(--green); color: #fff; }
+
+  /* ===== PANELS ===== */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ===== CARDS ===== */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  /* ===== FORM ===== */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+  input, select, textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--sans); font-size: 13px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--green); background: #fff; }
+  input[readonly] { background: var(--bg); color: var(--text-muted); cursor: default; }
+
+  /* ===== BUTTONS ===== */
+  .btn { padding: 10px 18px; border-radius: 8px; border: 1px solid var(--border); font-family: var(--sans); font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: all 0.2s; background: var(--card); color: var(--text); }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--green); color: #fff; border-color: var(--green); width: 100%; justify-content: center; margin-top: 4px; }
+  .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+  .btn-danger { background: var(--red-light); color: var(--red); border-color: #fca5a5; width: 100%; justify-content: center; margin-top: 4px; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-secondary { background: var(--blue-light); color: var(--blue); border-color: #B5D4F4; width: 100%; justify-content: center; margin-top: 4px; }
+
+  /* ===== METRICS ===== */
+  .metrics-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .metrics-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .metrics-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .metric { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .metric-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .metric-value { font-size: 1.4rem; font-weight: 600; font-family: var(--mono); }
+  .metric-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+  .metric.green .metric-value { color: var(--green-dark); }
+  .metric.blue .metric-value { color: var(--blue); }
+  .metric.gold .metric-value { color: var(--gold); }
+  .metric.red .metric-value { color: var(--red); }
+
+  /* ===== SPLIT BAR ===== */
+  .split-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+  .split-bar-s { background: var(--green); width: 30%; }
+  .split-bar-r { background: var(--blue); width: 70%; }
+  .split-boxes { display: grid; grid-template-columns: 3fr 7fr; gap: 8px; }
+  .split-box { border-radius: 10px; padding: 10px; text-align: center; }
+  .split-box.s { background: var(--green-light); }
+  .split-box.r { background: var(--blue-light); }
+  .split-box-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .split-box.s .split-box-label { color: var(--green-dark); }
+  .split-box.r .split-box-label { color: var(--blue); }
+  .split-box-value { font-size: 16px; font-weight: 600; font-family: var(--mono); }
+  .split-box.s .split-box-value { color: var(--green-dark); }
+  .split-box.r .split-box-value { color: var(--blue); }
+
+  /* ===== TIER BADGE ===== */
+  .tier-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--gold-light); color: var(--gold); border: 1px solid #f0d080; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-family: var(--mono); margin-top: 8px; }
+
+  /* ===== ALERTS ===== */
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 12px; margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .alert.info { background: var(--blue-light); color: var(--blue); border: 1px solid #B5D4F4; }
+  .alert.success { background: var(--green-light); color: var(--green-dark); border: 1px solid #9FE1CB; }
+  .alert.warning { background: var(--gold-light); color: var(--gold); border: 1px solid #FAC775; }
+  .alert.danger { background: var(--red-light); color: var(--red); border: 1px solid #fca5a5; }
+
+  /* ===== CODE BLOCK ===== */
+  .code-block { background: #1a1f1c; border-radius: 10px; padding: 1rem 1.25rem; font-family: var(--mono); font-size: 10.5px; line-height: 1.9; color: #9FE1CB; overflow-x: auto; margin-top: 8px; }
+  .code-block .cm { color: #6b7570; }
+  .code-block .ck { color: #FAC775; }
+  .code-block .cs { color: #9FE1CB; }
+  .code-block .cf { color: #85B7EB; }
+
+  /* ===== JOB STATUS ===== */
+  .job-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--bg); }
+  .job-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .job-dot.pending { background: #f59e0b; }
+  .job-dot.submitted { background: #3b82f6; }
+  .job-dot.completed { background: var(--green); }
+  .job-dot.cancelled { background: var(--red); }
+  .job-dot.expired { background: #9ca3af; }
+  .job-info { flex: 1; }
+  .job-id { font-size: 13px; font-weight: 600; font-family: var(--mono); }
+  .job-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .job-badge { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  .job-badge.pending { background: #fef3c7; color: #92400e; }
+  .job-badge.submitted { background: #dbeafe; color: #1e40af; }
+  .job-badge.completed { background: var(--green-light); color: var(--green-dark); }
+  .job-badge.cancelled { background: var(--red-light); color: var(--red); }
+  .job-badge.expired { background: #f3f4f6; color: #6b7280; }
+
+  /* ===== TIMELOCK BAR ===== */
+  .timelock-bar { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
+  .timelock-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .timelock-progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .timelock-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width 0.5s; }
+  .timelock-fill.warning { background: #f59e0b; }
+  .timelock-fill.danger { background: var(--red); }
+
+  /* ===== FILE UPLOAD ===== */
+  .file-upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); }
+  .file-upload-area:hover { border-color: var(--green); background: var(--green-light); }
+  .file-upload-area.has-file { border-color: var(--green); background: var(--green-light); }
+  .file-formats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; justify-content: center; }
+  .format-tag { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-size: 10px; font-family: var(--mono); color: var(--text-muted); }
+
+  /* ===== CONTRACT INFO ===== */
+  .contract-info { background: #1a1f1c; border-radius: 10px; padding: 1rem 1.25rem; font-family: var(--mono); font-size: 11px; line-height: 2; }
+  .ci-label { color: #6b7570; display: inline-block; width: 100px; }
+  .ci-value { color: #9FE1CB; word-break: break-all; }
+
+  /* ===== EXPLORER LINK ===== */
+  .explorer-link { display: flex; align-items: center; gap: 8px; color: var(--green-dark); font-size: 12px; text-decoration: none; padding: 10px 12px; background: var(--green-light); border-radius: 8px; font-family: var(--mono); margin-top: 8px; }
+  .explorer-link:hover { background: #c8eedd; }
+
+  /* ===== FOOTER ===== */
+  footer { text-align: center; padding: 2rem; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 2rem; font-family: var(--mono); line-height: 1.8; }
+
+  /* ===== SURCON PANEL ===== */
+  .surcon-banner {
+    background: linear-gradient(135deg, #1a3c5e 0%, #0F6E56 100%);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .surcon-badge-icon { font-size: 2.2rem; flex-shrink: 0; }
+  .surcon-banner h2 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+  .surcon-banner p { font-size: 11px; opacity: 0.8; }
+
+  .escrow-review-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 10px;
+    transition: box-shadow 0.2s;
+  }
+  .escrow-review-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+  .erc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .erc-id { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--blue); flex: 1; }
+  .erc-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .erc-status-dot.awaiting { background: #f59e0b; }
+  .erc-status-dot.approved { background: var(--green); }
+  .erc-body { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.7; }
+  .erc-body strong { color: var(--text); }
+  .erc-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .erc-actions .btn { flex: 1; min-width: 120px; margin: 0; font-size: 12px; padding: 8px 12px; }
+  .btn-approve { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn-approve:hover { background: var(--green-dark); }
+  .btn-download-doc { background: var(--blue-light); color: var(--blue); border-color: #B5D4F4; }
+
+  .notif-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 18px;
+    max-width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .notif-toast.green { background: var(--green-dark); }
+  .notif-toast.gold { background: #b45309; }
+  .notif-title { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; opacity: 0.85; }
+  .notif-dismiss { float: right; cursor: pointer; opacity: 0.7; margin-left: 10px; font-size: 16px; line-height: 1; }
+
+  .inbox-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+  .inbox-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+  .inbox-text { flex: 1; font-size: 12px; line-height: 1.6; }
+  .inbox-text strong { color: var(--text); font-size: 12px; }
+  .inbox-time { font-size: 10px; color: var(--text-muted); margin-top: 3px; font-family: var(--mono); }
+  .inbox-unread { border-left: 3px solid var(--green); }
+  .tab-surcon { display: none; } /* hidden until SURCON wallet connects */
+
+  @media (max-width: 600px) {
+    .form-row, .form-row-3, .metrics-3, .metrics-2, .metrics-4 { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.6rem; }
+    .hero-stats { gap: 1.2rem; }
+    .tab span { display: none; }
+    .split-boxes { grid-template-columns: 1fr 1fr; }
+    .notif-toast { left: 16px; right: 16px; max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">📍</div>
+    GeoPay
+  </div>
+  <div class="header-right">
+    <div class="wallet-pill" id="wallet-pill-display">
+      <div class="wallet-dot" style="background:#f59e0b"></div>
+      Not connected
+    </div>
+    <button id="connect-wallet-btn" onclick="connectWallet()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:20px;padding:5px 14px;font-size:11px;font-family:var(--mono);cursor:pointer;transition:background 0.2s;">🔗 Connect Wallet</button>
+    <div class="live-badge">✓ Testnet V4</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">SUI OVERFLOW 2026 · NIGERIA 🇳🇬 · DEFI & PAYMENTS</div>
+  <h1>Decentralized Spatial<br>Regulatory Protocol</h1>
+  <p>Digitizing the Kwara State official survey fee schedule on Sui blockchain — automated escrow, 7-day time lock, document upload, and 70/30 regulatory settlement.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value">20</div>
+      <div class="hero-stat-label">Fee tiers on-chain</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">70/30</div>
+      <div class="hero-stat-label">Auto split</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">Custom</div>
+      <div class="hero-stat-label">Agreed deadline</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">Any</div>
+      <div class="hero-stat-label">Document format</div>
+    </div>
+  </div>
+</div>
+
+<!-- WORKFLOW BAR -->
+<div class="workflow-bar">
+  <div class="wf-step done" onclick="showTab('calculator')">
+    <div class="wf-num">✓</div>
+    <div class="wf-label">Calculate fee</div>
+  </div>
+  <div class="wf-step active" onclick="showTab('escrow')">
+    <div class="wf-num">2</div>
+    <div class="wf-label">Create escrow</div>
+  </div>
+  <div class="wf-step" onclick="showTab('surveyor')">
+    <div class="wf-num">3</div>
+    <div class="wf-label">Upload document</div>
+  </div>
+  <div class="wf-step" onclick="showTab('release')">
+    <div class="wf-num">4</div>
+    <div class="wf-label">Release payment</div>
+  </div>
+  <div class="wf-step" onclick="showTab('status')">
+    <div class="wf-num">5</div>
+    <div class="wf-label">Job status</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab" onclick="showTab('calculator')">🧮 <span>Fee calculator</span></button>
+    <button class="tab" onclick="showTab('escrow')">🔒 <span>Create escrow</span></button>
+    <button class="tab" onclick="showTab('surveyor')">📁 <span>Upload document</span></button>
+    <button class="tab" onclick="showTab('release')">💰 <span>Release payment</span></button>
+    <button class="tab" onclick="showTab('status')">📊 <span>Job status</span></button>
+    <button class="tab tab-surcon" id="tab-btn-surcon" onclick="showTab('surcon')" style="background:linear-gradient(135deg,#1a3c5e,#0F6E56);color:#fff;border-color:#0F6E56;">🏛️ <span>SURCON Review</span></button>
+  </div>
+
+  <!-- ==================== CALCULATOR ==================== -->
+  <div id="tab-calculator" class="panel active">
+    <div class="card">
+      <div class="card-title">Land details — Kwara State, Nigeria</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Land area (m²)</label>
+          <input type="number" id="area" value="500" min="1" oninput="calcFee()" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Land type</label>
+          <select id="landtype" onchange="calcFee()">
+            <option value="p">Private land</option>
+            <option value="c">Commercial land</option>
+          </select>
+        </div>
+      </div>
+      <div id="tier-badge" class="tier-badge">⚡ Tier 1 — 0 to 690 m²</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Official Kwara State fee (SURCON Approved)</div>
+      <div class="metrics-3">
+        <div class="metric green">
+          <div class="metric-label">Survey fee</div>
+          <div class="metric-value" id="fee-ngn">₦150,000</div>
+          <div class="metric-sub">Official SURCON rate</div>
+        </div>
+        <div class="metric blue">
+          <div class="metric-label">Mandatory 70%</div>
+          <div class="metric-value" id="fee-reg">₦105,000</div>
+          <div class="metric-sub">Regulatory remittance</div>
+        </div>
+        <div class="metric gold">
+          <div class="metric-label">Surveyor earns</div>
+          <div class="metric-value" id="fee-sur">₦45,000</div>
+          <div class="metric-sub">30% net payout</div>
+        </div>
+      </div>
+
+      <div class="card-title">Automated 70/30 payment split</div>
+      <div class="split-bar">
+        <div class="split-bar-s"></div>
+        <div class="split-bar-r"></div>
+      </div>
+      <div class="split-boxes">
+        <div class="split-box s">
+          <div class="split-box-label">Surveyor (30%)</div>
+          <div class="split-box-value" id="split-sur">₦45,000</div>
+        </div>
+        <div class="split-box r">
+          <div class="split-box-label">SURCON/NIS (70%)</div>
+          <div class="split-box-value" id="split-reg">₦105,000</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:14px;" onclick="showTab('escrow')">🔒 Create escrow with this fee →</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Deployed contract (V3)</div>
+      <div class="contract-info">
+        <div><span class="ci-label">Package ID </span><span class="ci-value">0x537e7ab3acddaa671530f588ed3e2c79e48acd8480e7bdbbaeba8548a3c3050d</span></div>
+        <div><span class="ci-label">Module     </span><span class="ci-value">geopay::geopay_escrow</span></div>
+        <div><span class="ci-label">Network    </span><span class="ci-value">Sui Testnet</span></div>
+        <div><span class="ci-label">Version    </span><span class="ci-value">0.0.3 — with time lock & document upload</span></div>
+        <div><span class="ci-label">Status     </span><span class="ci-value">✓ Live</span></div>
+      </div>
+      <a class="explorer-link" href="https://suiexplorer.com/object/0x537e7ab3acddaa671530f588ed3e2c79e48acd8480e7bdbbaeba8548a3c3050d?network=testnet" target="_blank">
+        🔗 View on Sui Explorer →
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== CREATE ESCROW ==================== -->
+  <div id="tab-escrow" class="panel">
+    <div class="alert info">ℹ️ <div>Payment is locked in the smart contract until the surveyor uploads the Digital Red Copy. If the surveyor does not act within <strong>7 days</strong>, you can claim a full refund automatically.</div></div>
+
+    <div class="card">
+      <div class="card-title">Job information</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Job ID</label>
+          <input type="text" id="job-id" value="JOB-KW-2026-001" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Land area (m²)</label>
+          <input type="number" id="escrow-area" value="500" oninput="updateEscrowFee()" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="escrow-desc" value="Cadastral Survey - Private Land, Ilorin" />
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Land type</label>
+          <select id="escrow-type" onchange="updateEscrowFee()">
+            <option value="p">Private (0)</option>
+            <option value="c">Commercial (1)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Calculated fee</label>
+          <input type="text" id="escrow-fee-display" value="₦150,000 (0.15 SUI)" readonly />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Parties involved</div>
+      <div class="form-group">
+        <label>Your wallet (client address)</label>
+        <input type="text" placeholder="Your wallet address (auto-filled on connect)" value="" readonly />
+      </div>
+      <div class="form-group">
+        <label>Surveyor wallet address</label>
+        <input type="text" id="surveyor-addr" placeholder="0xSurveyor..." />
+      </div>
+      <div class="form-group">
+        <label>Regulatory body address (SURCON/NIS — hardcoded)</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="text" id="surcon-addr" value="0xf44f68ac7f90d87796c1e2d654be2b00651d25cf7ec83185519f8c939ff1307b" readonly style="background:#f0faf5;color:var(--green-dark);font-family:var(--mono);font-size:11px;border-color:#9FE1CB;" />
+          <button class="btn" style="white-space:nowrap;flex-shrink:0;padding:9px 14px;font-size:12px;" onclick="copySurcon(this)" title="Copy SURCON address">📋 Copy</button>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">⚡ Pre-set in smart contract — cannot be changed</div>
+      </div>
+      <div class="form-group">
+        <label>Payment coin object ID</label>
+        <input type="text" id="coin-id" placeholder="0xe146233734e52a..." />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⏰ Surveyor deadline</div>
+      <div class="alert info">📅 <div>Set an agreed deadline date with your surveyor. If the document is not submitted by this date, you can claim a <strong>full automatic refund</strong>. Leave blank to create escrow without a deadline.</div></div>
+
+      <div class="form-row" style="align-items:flex-end;">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Deadline date (agreed with surveyor)</label>
+          <input type="date" id="escrow-deadline" oninput="updateDeadlinePreview()" />
+          <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Any future date — no minimum or maximum enforced</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Days from today</label>
+          <input type="text" id="deadline-days-display" readonly placeholder="— days" style="background:var(--bg);color:var(--green-dark);font-family:var(--mono);font-weight:600;" />
+        </div>
+      </div>
+
+      <div id="deadline-preview" style="display:none;margin-top:10px;background:var(--gold-light);border:1px solid #f0d080;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gold);">
+        <span style="font-weight:600;">⏰ Deadline:</span> <span id="deadline-preview-text"></span>
+      </div>
+
+      <div class="form-row" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="createEscrowV1()">🔒 Create escrow (no deadline)</button>
+        <button class="btn btn-secondary" onclick="createEscrowV2()">⏰ Create escrow with deadline</button>
+      </div>
+      <div id="escrow-output" class="alert success" style="display:none; margin-top:8px; white-space:pre-line;"></div>
+      <div id="escrow-id-box" style="display:none;margin-top:10px;background:#f0faf5;border:1px solid #9FE1CB;border-radius:10px;padding:12px 14px;">
+        <div style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Escrow Object ID</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span id="escrow-id-display" style="font-family:var(--mono);font-size:12px;color:var(--green-dark);word-break:break-all;flex:1;"></span>
+          <button class="btn" id="copy-escrow-btn" onclick="copyEscrowId()" style="flex-shrink:0;padding:7px 14px;font-size:12px;white-space:nowrap;">📋 Copy ID</button>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <a id="escrow-explorer-link" href="#" target="_blank" class="explorer-link" style="flex:1;min-width:200px;margin:0;">🔗 View on Sui Explorer →</a>
+          <button class="btn btn-secondary" style="flex-shrink:0;margin:0;padding:8px 14px;font-size:12px;" onclick="goToUpload()">📁 Go to document upload →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">CLI command reference</div>
+      <div class="code-block">
+        <div><span class="cm"># V1 — No time lock</span></div>
+        <div><span class="cf">sui client call</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--package</span> <span class="cs">0xc1222e16...6c2a7</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--module</span> <span class="cs">geopay_escrow</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--function</span> <span class="cs">create_escrow</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;COIN_ID&gt; &lt;SURVEYOR&gt; &lt;SURCON&gt; "JOB-ID" "Desc" 500 0 \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--gas-budget</span> <span class="cs">10000000</span></div>
+        <br>
+        <div><span class="cm"># V2 — With agreed deadline (pass clock 0x6 + deadline timestamp in ms)</span></div>
+        <div><span class="ck">--function</span> <span class="cs">create_escrow_v2</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;COIN_ID&gt; &lt;SURVEYOR&gt; &lt;SURCON&gt; "JOB-ID" "Desc" 500 0 <span class="cs">0x6</span> <span class="cs" id="cli-deadline-val">&lt;DEADLINE_MS&gt;</span></div>
+        <div><span class="cm"># DEADLINE_MS = Unix timestamp in milliseconds of your chosen date</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SURVEYOR / DOCUMENT UPLOAD ==================== -->
+  <div id="tab-surveyor" class="panel">
+    <div class="alert success">✓ <div>Surveyor submits the Digital Red Copy here. Any document format is accepted — <strong>DWG, DXF, PDF, AutoCAD, PNG, JPG, TIF</strong>. The document hash and metadata are stored permanently on-chain and the regulatory body is notified automatically via blockchain event.</div></div>
+
+    <div class="card">
+      <div class="card-title">Document upload (any format)</div>
+      <div class="form-group">
+        <label>Escrow object ID</label>
+        <input type="text" id="doc-escrow-id" placeholder="0xe20b5a37..." />
+      </div>
+
+      <div class="file-upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 2rem; margin-bottom: 8px;">📁</div>
+        <div style="font-size: 13px; font-weight: 500; margin-bottom: 4px;">Click to upload survey document</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Supported formats:</div>
+        <div class="file-formats">
+          <span class="format-tag">DWG</span>
+          <span class="format-tag">DXF</span>
+          <span class="format-tag">PDF</span>
+          <span class="format-tag">AutoCAD</span>
+          <span class="format-tag">PNG</span>
+          <span class="format-tag">JPG</span>
+          <span class="format-tag">TIF</span>
+          <span class="format-tag">SHP</span>
+          <span class="format-tag">KML</span>
+          <span class="format-tag">Any format</span>
+        </div>
+        <input type="file" id="file-input" style="display:none" onchange="handleFileUpload(this)" />
+      </div>
+
+      <div class="form-row" style="margin-top: 1rem;">
+        <div class="form-group" style="margin-bottom:0">
+          <label>File name</label>
+          <input type="text" id="doc-name" placeholder="survey_plot45_ilorin.dwg" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>File format</label>
+          <select id="doc-format">
+            <option>DWG</option>
+            <option>DXF</option>
+            <option>PDF</option>
+            <option>AutoCAD</option>
+            <option>PNG</option>
+            <option>JPG</option>
+            <option>TIF</option>
+            <option>SHP</option>
+            <option>KML</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Document hash (IPFS / Walrus storage URL)</label>
+        <input type="text" id="doc-hash" placeholder="QmXyz123AbcDefGhiJklMnoPqrStu..." />
+      </div>
+
+      <div class="form-group">
+        <label>Storage URL (full access link)</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="doc-url" placeholder="https://walrus.testnet.sui.io/v1/blobs/..." style="flex:1;" />
+          <button class="btn" id="download-doc-btn" onclick="downloadFromWalrus()" style="flex-shrink:0;padding:9px 14px;font-size:12px;white-space:nowrap;" title="Download document from Walrus to your device">⬇ Download</button>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Paste a Walrus storage URL and click Download to save the document to your device</div>
+      </div>
+
+      <div class="form-row">
+        <button class="btn btn-primary" onclick="submitRedCopyV1()">📄 Submit (V1 — hash only)</button>
+        <button class="btn btn-secondary" onclick="submitRedCopyV2()">📁 Submit V2 (with full metadata)</button>
+      </div>
+      <div id="doc-output" class="alert success" style="display:none; margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">CLI command reference</div>
+      <div class="code-block">
+        <div><span class="cm"># V1 — Hash only</span></div>
+        <div><span class="cf">sui client call</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--function</span> <span class="cs">submit_red_copy</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt; "QmFileHash123..."</div>
+        <br>
+        <div><span class="cm"># V2 — Full document metadata + regulatory notification</span></div>
+        <div><span class="ck">--function</span> <span class="cs">submit_red_copy_v2</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt; "QmHash" "plan.dwg" "DWG" "https://ipfs.io/..." <span class="cs">0x6</span></div>
+        <br>
+        <div><span class="cm"># Regulatory body gets notified via RedCopySubmitted event on-chain</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== RELEASE PAYMENT ==================== -->
+  <div id="tab-release" class="panel">
+    <div class="card">
+      <div class="card-title">✅ Client confirms & releases payment</div>
+      <div class="alert info">ℹ️ <div>Once <strong>SURCON/NIS has approved</strong> the document on-chain (state = APPROVED), you can release payment. The smart contract sends <strong>30% to the Surveyor</strong> and <strong>70% to SURCON/NIS</strong> automatically. <strong>Note:</strong> V4 requires SURCON approval before this button works.</div></div>
+      <div class="form-group">
+        <label>Escrow object ID</label>
+        <input type="text" id="release-escrow-id" placeholder="0xe20b5a37..." />
+      </div>
+      <button class="btn btn-primary" onclick="confirmRelease()">✅ Confirm & release payment (70/30 split)</button>
+      <div id="release-output" class="alert success" style="display:none; margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚠️ Raise a dispute (client or surveyor)</div>
+      <div class="alert warning">⚠️ <div>If there is a problem with the survey document or payment, either the <strong>client or surveyor</strong> can raise a dispute. This freezes the escrow — only <strong>SURCON/NIS</strong> can then resolve it with a custom percentage split via <code>resolve_dispute</code>.</div></div>
+      <div class="form-group">
+        <label>Escrow object ID</label>
+        <input type="text" id="dispute-escrow-id" placeholder="0xe20b5a37..." />
+      </div>
+      <div class="form-group">
+        <label>Reason for dispute</label>
+        <input type="text" id="dispute-reason" placeholder="e.g. Document does not match agreed survey boundaries..." />
+      </div>
+      <button class="btn btn-danger" onclick="raiseDispute()">⚠️ Raise dispute (freeze escrow)</button>
+      <div id="dispute-output" class="alert success" style="display:none; margin-top:8px;"></div>
+
+      <div class="code-block" style="margin-top:1rem;">
+        <div><span class="cm"># Client or Surveyor raises a dispute</span></div>
+        <div><span class="cf">sui client call</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--package</span> <span class="cs">0x537e7ab3...050d</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--module</span> <span class="cs">geopay_escrow</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--function</span> <span class="cs">raise_dispute</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt; <span class="cs">"reason for dispute"</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">❌ Cancel escrow (client only — pending state)</div>
+      <div class="form-group">
+        <label>Escrow object ID</label>
+        <input type="text" id="cancel-escrow-id" placeholder="0xe20b5a37..." />
+      </div>
+      <button class="btn btn-danger" onclick="cancelEscrow()">❌ Cancel & refund full payment to client</button>
+      <div id="cancel-output" class="alert success" style="display:none; margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⏰ Claim expired refund (after 7-day deadline)</div>
+      <div class="alert warning">⚠️ <div>If the surveyor did not submit the document by the <strong>agreed deadline</strong>, you can claim a full refund here. Only works for escrows created with <strong>create_escrow_v2</strong> (with a deadline set).</div></div>
+      <div class="form-group">
+        <label>Escrow object ID</label>
+        <input type="text" id="expire-escrow-id" placeholder="0xe20b5a37..." />
+      </div>
+      <button class="btn btn-danger" onclick="claimExpired()">⏰ Claim refund (expired escrow)</button>
+      <div id="expire-output" class="alert success" style="display:none; margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">CLI command reference</div>
+      <div class="code-block">
+        <div><span class="cm"># Confirm and release 70/30 (requires STATE_APPROVED first)</span></div>
+        <div><span class="cf">sui client call</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--function</span> <span class="cs">confirm_and_release</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt;</div>
+        <br>
+        <div><span class="cm"># SURCON approves on-chain (required before release)</span></div>
+        <div><span class="ck">--function</span> <span class="cs">regulatory_approve</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt; <span class="cs">0x6</span></div>
+        <br>
+        <div><span class="cm"># Cancel escrow (refund client)</span></div>
+        <div><span class="ck">--function</span> <span class="cs">cancel_escrow</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt;</div>
+        <br>
+        <div><span class="cm"># Claim expired refund (pass clock 0x6)</span></div>
+        <div><span class="ck">--function</span> <span class="cs">claim_expired_refund</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt; <span class="cs">0x6</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JOB STATUS ==================== -->
+  <div id="tab-status" class="panel">
+    <div class="metrics-4">
+      <div class="metric green">
+        <div class="metric-label">Total locked</div>
+        <div class="metric-value">₦1,015,000</div>
+        <div class="metric-sub">In active escrows</div>
+      </div>
+      <div class="metric blue">
+        <div class="metric-label">Regulatory remitted</div>
+        <div class="metric-value">₦406,000</div>
+        <div class="metric-sub">70% to SURCON/NIS</div>
+      </div>
+      <div class="metric gold">
+        <div class="metric-label">Surveyor paid</div>
+        <div class="metric-value">₦174,000</div>
+        <div class="metric-sub">30% net payout</div>
+      </div>
+      <div class="metric red">
+        <div class="metric-label">Expired/Cancelled</div>
+        <div class="metric-value">1</div>
+        <div class="metric-sub">Refunded to clients</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Active jobs</div>
+
+      <div class="job-item">
+        <div class="job-dot pending"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-001</div>
+          <div class="job-desc">Cadastral Survey · 500 m² · Private · ₦150,000 · ⏰ 5 days left</div>
+        </div>
+        <span class="job-badge pending">Pending</span>
+      </div>
+
+      <div class="job-item">
+        <div class="job-dot submitted"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-002</div>
+          <div class="job-desc">Boundary Survey · 1,200 m² · Commercial · ₦285,000 · 📁 plan.dwg uploaded · Awaiting SURCON review</div>
+        </div>
+        <span class="job-badge submitted">Submitted</span>
+      </div>
+
+      <div class="job-item">
+        <div class="job-dot" style="background:var(--green);"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-006</div>
+          <div class="job-desc">Subdivision Survey · 800 m² · Private · ₦190,000 · ✅ SURCON approved — awaiting client release</div>
+        </div>
+        <span class="job-badge" style="background:#e0f5ee;color:var(--green-dark);">Approved</span>
+      </div>
+
+      <div class="job-item">
+        <div class="job-dot" style="background:#f59e0b;"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-007</div>
+          <div class="job-desc">Route Survey · 2,090 m² · Private · ₦230,000 · ⚠️ Dispute raised — SURCON reviewing</div>
+        </div>
+        <span class="job-badge" style="background:#fef3c7;color:#b45309;">Disputed</span>
+      </div>
+
+      <div class="job-item">
+        <div class="job-dot completed"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-003</div>
+          <div class="job-desc">Topographic Survey · 2 Ha · Private · ₦580,000 · ✓ 70/30 released</div>
+        </div>
+        <span class="job-badge completed">Completed</span>
+      </div>
+
+      <div class="job-item">
+        <div class="job-dot expired"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-004</div>
+          <div class="job-desc">Perimeter Survey · 690 m² · Commercial · ₦225,000 · ⏰ Deadline missed</div>
+        </div>
+        <span class="job-badge expired">Expired</span>
+      </div>
+
+      <div class="job-item">
+        <div class="job-dot cancelled"></div>
+        <div class="job-info">
+          <div class="job-id">JOB-KW-2026-005</div>
+          <div class="job-desc">Route Survey · 3,020 m² · Private · ₦265,000 · Refunded to client</div>
+        </div>
+        <span class="job-badge cancelled">Cancelled</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Contract info</div>
+      <div class="contract-info">
+        <div><span class="ci-label">Package V4 (Current)</span><span class="ci-value">0x537e7ab3acddaa671530f588ed3e2c79e48acd8480e7bdbbaeba8548a3c3050d</span></div>
+        <div><span class="ci-label">Package V1  </span><span class="ci-value">0xdce69a787695732f11a8164dac2340bdd197a372a8bbe35b0e18ed9f942a8818</span></div>
+        <div><span class="ci-label">Upgrade Cap </span><span class="ci-value">0x2b2ec8688decab1c02a141fc3ca7f7bd286275ad766d5a0e7871f30cfc10563d</span></div>
+        <div><span class="ci-label">Module      </span><span class="ci-value">geopay_escrow</span></div>
+      </div>
+      <a class="explorer-link" href="https://suiexplorer.com/object/0x537e7ab3acddaa671530f588ed3e2c79e48acd8480e7bdbbaeba8548a3c3050d?network=testnet" target="_blank">
+        🔗 View on Sui Explorer →
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== SURCON REVIEW PANEL ==================== -->
+  <div id="tab-surcon" class="panel">
+
+    <div class="surcon-banner">
+      <div class="surcon-badge-icon">🏛️</div>
+      <div>
+        <h2>SURCON / NIS Regulatory Review Panel</h2>
+        <p>Wallet: <span id="surcon-connected-addr" style="font-family:var(--mono);">0xf44f68...307b</span> · You are connected as the regulatory authority</p>
+      </div>
+    </div>
+
+    <div class="metrics-3" style="margin-bottom:1rem;">
+      <div class="metric gold">
+        <div class="metric-label">Awaiting review</div>
+        <div class="metric-value" id="surcon-pending-count">2</div>
+        <div class="metric-sub">Documents submitted</div>
+      </div>
+      <div class="metric green">
+        <div class="metric-label">Approved today</div>
+        <div class="metric-value" id="surcon-approved-count">1</div>
+        <div class="metric-sub">Clients notified</div>
+      </div>
+      <div class="metric blue">
+        <div class="metric-label">Fees collected</div>
+        <div class="metric-value">₦406,000</div>
+        <div class="metric-sub">70% of released</div>
+      </div>
+    </div>
+
+    <!-- PENDING REVIEWS -->
+    <div class="card">
+      <div class="card-title">📋 Approve document on-chain (regulatory_approve)</div>
+      <div class="alert warning">⚠️ <div>Enter the escrow Object ID, review the document, then click <strong>Approve On-Chain</strong>. This calls <code>regulatory_approve</code> on the V4 contract — moving the escrow from <strong>SUBMITTED → APPROVED</strong> so the client can then release payment. This is a real on-chain transaction from your wallet.</div></div>
+
+      <!-- REAL APPROVAL FORM -->
+      <div class="form-group" style="margin-top:8px;">
+        <label>Escrow Object ID to approve</label>
+        <input type="text" id="surcon-escrow-id" placeholder="0xe20b5a37a520eb2150c75a52a880ab78..." />
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="btn btn-download-doc" style="flex:1;" onclick="surconDownloadDocFromEscrow()">⬇ Load & download document from chain</button>
+        <button class="btn btn-approve" style="flex:1;" onclick="regulatoryApprove()">🏛️ Approve on-chain (regulatory_approve)</button>
+      </div>
+      <div id="surcon-approve-output" class="alert success" style="display:none;margin-top:8px;white-space:pre-line;"></div>
+
+      <div style="border-top:1px solid var(--border);margin:1rem 0;"></div>
+      <div class="card-title" style="font-size:12px;margin-bottom:8px;">📋 Demo queue (replace escrow IDs with real ones)</div>
+
+      <div id="surcon-review-list">
+
+        <div class="escrow-review-card" id="erc-JOB001">
+          <div class="erc-header">
+            <div class="erc-status-dot awaiting"></div>
+            <div class="erc-id">JOB-KW-2026-001</div>
+            <span class="job-badge pending">Awaiting review</span>
+          </div>
+          <div class="erc-body">
+            <strong>Cadastral Survey · 500 m² · Private Land, Ilorin</strong><br>
+            Client: 0xfe7f...ff4c &nbsp;·&nbsp; Surveyor: 0xABC1...7890<br>
+            Amount: ₦150,000 &nbsp;·&nbsp; Your 70%: ₦105,000<br>
+            Document: <em>survey_plot45_ilorin.dwg</em> &nbsp;·&nbsp; Submitted: 2 hours ago<br>
+            IPFS: <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">QmSurvey8X9Y2Z... <a href="#" style="color:var(--green-dark);">view ↗</a></span>
+          </div>
+          <div class="erc-actions">
+            <button class="btn btn-download-doc" onclick="surconDownloadDoc('JOB-KW-2026-001','survey_plot45_ilorin.dwg')">⬇ Download document</button>
+            <button class="btn btn-approve" onclick="surconApproveDemo('JOB-KW-2026-001','erc-JOB001','0xfe7f...ff4c','0xABC1...7890')">✅ Mark reviewed (demo)</button>
+          </div>
+        </div>
+
+        <div class="escrow-review-card" id="erc-JOB002">
+          <div class="erc-header">
+            <div class="erc-status-dot awaiting"></div>
+            <div class="erc-id">JOB-KW-2026-002</div>
+            <span class="job-badge pending">Awaiting review</span>
+          </div>
+          <div class="erc-body">
+            <strong>Boundary Survey · 1,200 m² · Commercial, Offa</strong><br>
+            Client: 0xD33C...1122 &nbsp;·&nbsp; Surveyor: 0xE44D...3344<br>
+            Amount: ₦285,000 &nbsp;·&nbsp; Your 70%: ₦199,500<br>
+            Document: <em>boundary_offa_commercial.pdf</em> &nbsp;·&nbsp; Submitted: 5 hours ago<br>
+            IPFS: <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">QmBoundary7A3K... <a href="#" style="color:var(--green-dark);">view ↗</a></span>
+          </div>
+          <div class="erc-actions">
+            <button class="btn btn-download-doc" onclick="surconDownloadDoc('JOB-KW-2026-002','boundary_offa_commercial.pdf')">⬇ Download document</button>
+            <button class="btn btn-approve" onclick="surconApproveDemo('JOB-KW-2026-002','erc-JOB002','0xD33C...1122','0xE44D...3344')">✅ Mark reviewed (demo)</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RESOLVE DISPUTE (SURCON only) -->
+    <div class="card">
+      <div class="card-title">⚖️ Resolve dispute (resolve_dispute)</div>
+      <div class="alert info">ℹ️ <div>If a dispute has been raised on an escrow, only SURCON/NIS can resolve it. Set the <strong>surveyor's share %</strong> — the remainder automatically goes to the client. E.g. 20% to surveyor means 80% refunded to client.</div></div>
+      <div class="form-group">
+        <label>Disputed escrow Object ID</label>
+        <input type="text" id="dispute-resolve-escrow-id" placeholder="0xe20b5a37..." />
+      </div>
+      <div class="form-group">
+        <label>Surveyor share % (0–100) — remainder goes to client</label>
+        <input type="number" id="dispute-surveyor-pct" placeholder="e.g. 20" min="0" max="100" style="width:160px;" />
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Enter 0 to refund 100% to client · Enter 100 to pay 100% to surveyor</div>
+      </div>
+      <button class="btn btn-primary" onclick="resolveDispute()">⚖️ Resolve dispute on-chain</button>
+      <div id="dispute-resolve-output" class="alert success" style="display:none;margin-top:8px;white-space:pre-line;"></div>
+
+      <div class="code-block" style="margin-top:1rem;">
+        <div><span class="cm"># SURCON resolves dispute — 20% to surveyor, 80% refund to client</span></div>
+        <div><span class="cf">sui client call</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--package</span> <span class="cs">0x537e7ab3...050d</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--module</span> <span class="cs">geopay_escrow</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--function</span> <span class="cs">resolve_dispute</span> \</div>
+        <div>&nbsp;&nbsp;<span class="ck">--args</span> &lt;ESCROW_ID&gt; <span class="cs">20</span></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION INBOX — what SURCON sent out -->
+    <div class="card">
+      <div class="card-title">📬 Notifications sent by SURCON</div>
+      <div id="surcon-notif-log">
+        <div class="inbox-item">
+          <div class="inbox-icon">📭</div>
+          <div class="inbox-text">No approvals sent yet this session. Approve a document above to notify parties.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end surcon panel -->
+
+</div><!-- end container -->
+
+<footer>
+  GeoPay · Sui Overflow 2026 · DeFi & Payments Track<br>
+  Built by <strong>Ahmed Omokunmi Muhammed</strong> · Professional Surveyor · Nigeria 🇳🇬<br>
+  Package ID: 0x537e7ab3acddaa671530f588ed3e2c79e48acd8480e7bdbbaeba8548a3c3050d
+</footer>
+
+<!-- NOTIFICATION TOAST -->
+<div id="notif-toast" class="notif-toast">
+  <span class="notif-dismiss" onclick="dismissToast()">✕</span>
+  <div class="notif-title" id="notif-title">Notification</div>
+  <div id="notif-body">...</div>
+</div>
+
+<!-- Sui SDK via CDN -->
+<script type="module">
+import { SuiClient, getFullnodeUrl } from 'https://esm.run/@mysten/sui/client';
+import { Transaction } from 'https://esm.run/@mysten/sui/transactions';
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const PACKAGE_ID = '0x537e7ab3acddaa671530f588ed3e2c79e48acd8480e7bdbbaeba8548a3c3050d';
+const MODULE     = 'geopay_escrow';
+const CLOCK_ID   = '0x6';
+const SURCON_ADDR= '0xf44f68ac7f90d87796c1e2d654be2b00651d25cf7ec83185519f8c939ff1307b';
+const NETWORK    = 'testnet';
+
+const suiClient = new SuiClient({ url: getFullnodeUrl(NETWORK) });
+
+// ============================================================
+// WALLET STATE
+// ============================================================
+let walletAddress = null;
+let walletAdapter = null; // the connected wallet object
+
+// ============================================================
+// WALLET DETECTION & CONNECTION
+// ============================================================
+async function detectWallets() {
+  // Sui standard wallets register on window.suiWallet or window.__suiWallets or
+  // via the Wallet Standard (window.navigator.wallets / window.wallets)
+  const candidates = [];
+
+  // Legacy Sui Wallet
+  if (window.suiWallet)      candidates.push({ name: 'Sui Wallet',   obj: window.suiWallet });
+  // Martian
+  if (window.martian?.sui)   candidates.push({ name: 'Martian',      obj: window.martian.sui });
+  // Ethos
+  if (window.ethosWallet)    candidates.push({ name: 'Ethos Wallet', obj: window.ethosWallet });
+  // Nightly
+  if (window.nightly?.sui)   candidates.push({ name: 'Nightly',      obj: window.nightly.sui });
+  // Wallet Standard (Slush, OKX, etc.)
+  if (window.navigator?.wallets) {
+    const reg = window.navigator.wallets.get?.() ?? [];
+    for (const w of reg) candidates.push({ name: w.name, obj: w });
+  }
+
+  return candidates;
+}
+
+async function connectWallet() {
+  const btn = document.getElementById('connect-wallet-btn');
+  if (btn) { btn.textContent = '⏳ Connecting...'; btn.disabled = true; }
+
+  try {
+    const wallets = await detectWallets();
+
+    if (wallets.length === 0) {
+      alert('No Sui wallet detected.\n\nPlease install Sui Wallet, Slush, Martian, or any Sui-compatible wallet extension, then refresh this page.');
+      if (btn) { btn.textContent = '🔗 Connect Wallet'; btn.disabled = false; }
+      return;
+    }
+
+    // Use the first available wallet
+    const chosen = wallets[0];
+    walletAdapter = chosen.obj;
+
+    // Request permissions / connect
+    let accounts = [];
+    if (typeof walletAdapter.requestPermissions === 'function') {
+      await walletAdapter.requestPermissions({ permissions: ['viewAccount', 'suggestTransactions'] });
+      const res = await walletAdapter.getAccounts();
+      accounts = res.map(a => typeof a === 'string' ? a : a.address);
+    } else if (typeof walletAdapter.connect === 'function') {
+      const res = await walletAdapter.connect();
+      accounts = res?.accounts?.map(a => a.address) ?? res?.address ? [res.address] : [];
+    } else if (typeof walletAdapter.getAccounts === 'function') {
+      accounts = await walletAdapter.getAccounts();
+    }
+
+    if (!accounts || accounts.length === 0) throw new Error('No accounts returned from wallet.');
+
+    walletAddress = accounts[0];
+    onWalletConnected(walletAddress, chosen.name);
+
+  } catch (err) {
+    console.error('Wallet connect error:', err);
+    alert('Wallet connection failed:\n' + err.message);
+    if (btn) { btn.textContent = '🔗 Connect Wallet'; btn.disabled = false; }
+  }
+}
+
+function disconnectWallet() {
+  walletAddress = null;
+  walletAdapter = null;
+  updateWalletUI(null);
+  showToast('👋 Wallet disconnected', 'You have been disconnected.', '', 3000);
+}
+
+function onWalletConnected(address, walletName) {
+  walletAddress = address;
+  updateWalletUI(address, walletName);
+  checkWalletForSurcon(address);
+  // Pre-fill client address field
+  const clientField = document.querySelector('input[placeholder="Your wallet address (auto-filled on connect)" value=""]');
+  if (clientField) clientField.value = address;
+  showToast('✅ Wallet connected!', walletName + ' · ' + shortAddr(address), 'green', 4000);
+}
+
+function updateWalletUI(address, walletName) {
+  const pill = document.getElementById('wallet-pill-display');
+  const btn  = document.getElementById('connect-wallet-btn');
+  if (address) {
+    if (pill) pill.innerHTML = `<div class="wallet-dot"></div>${shortAddr(address)}`;
+    if (btn)  { btn.textContent = '🔓 Disconnect'; btn.onclick = disconnectWallet; btn.disabled = false; }
+  } else {
+    if (pill) pill.innerHTML = `<div class="wallet-dot" style="background:#f59e0b"></div>Not connected`;
+    if (btn)  { btn.textContent = '🔗 Connect Wallet'; btn.onclick = connectWallet; btn.disabled = false; }
+  }
+}
+
+function shortAddr(a) {
+  return a ? a.slice(0,8)+'...'+a.slice(-4) : '';
+}
+
+// ============================================================
+// HELPER: sign and execute a transaction
+// ============================================================
+async function signAndExecute(tx) {
+  if (!walletAddress || !walletAdapter) throw new Error('Wallet not connected. Please connect your wallet first.');
+
+  const txBytes = await tx.build({ client: suiClient });
+
+  let result;
+  // Try different wallet signing APIs
+  if (typeof walletAdapter.signAndExecuteTransactionBlock === 'function') {
+    result = await walletAdapter.signAndExecuteTransactionBlock({
+      transactionBlock: tx,
+      options: { showEffects: true, showEvents: true, showObjectChanges: true }
+    });
+  } else if (typeof walletAdapter.signAndExecuteTransaction === 'function') {
+    result = await walletAdapter.signAndExecuteTransaction({
+      transaction: tx,
+      options: { showEffects: true, showEvents: true, showObjectChanges: true }
+    });
+  } else if (typeof walletAdapter.features?.['sui:signAndExecuteTransaction']?.signAndExecuteTransaction === 'function') {
+    result = await walletAdapter.features['sui:signAndExecuteTransaction'].signAndExecuteTransaction({
+      transaction: tx,
+      options: { showEffects: true, showEvents: true, showObjectChanges: true }
+    });
+  } else {
+    throw new Error('Wallet does not support transaction signing. Please use a compatible Sui wallet.');
+  }
+
+  if (result.effects?.status?.status === 'failure') {
+    throw new Error('Transaction failed on-chain: ' + (result.effects.status.error || 'Unknown error'));
+  }
+  return result;
+}
+
+// ============================================================
+// HELPER: get a coin for the exact fee amount
+// ============================================================
+async function getCoinForFee(feeMist) {
+  if (!walletAddress) throw new Error('Wallet not connected.');
+  const coins = await suiClient.getCoins({ owner: walletAddress, coinType: '0x2::sui::SUI' });
+  // Find a coin with enough balance
+  const suitable = coins.data.find(c => BigInt(c.balance) >= BigInt(feeMist));
+  if (!suitable) throw new Error(`Insufficient SUI balance. Need ${feeMist} MIST (${(feeMist/1e9).toFixed(4)} SUI).`);
+  return suitable.coinObjectId;
+}
+
+// ============================================================
+// HELPER: parse fee from display string back to MIST
+// ============================================================
+function feeDisplayToMist() {
+  const raw = document.getElementById('escrow-fee-display').value;
+  // Format is "₦150,000 (0.150 SUI)" — extract SUI value and convert
+  const match = raw.match(/\(([0-9.]+)\s*SUI\)/);
+  if (match) return Math.round(parseFloat(match[1]) * 1e9);
+  // Fallback: parse ₦ amount and use JS fee arrays
+  const area = parseFloat(document.getElementById('escrow-area').value) || 0;
+  const type = document.getElementById('escrow-type').value;
+  return calcFeeMist(area, type);
+}
+
+function calcFeeMist(area, type) {
+  const fp=[150000000,190000000,210000000,230000000,250000000,265000000,275000000,295000000,315000000,335000000,420000000,505000000,580000000,665000000,750000000,835000000,920000000,995000000,1060000000,1145000000];
+  const fc=[225000000,285000000,315000000,345000000,375000000,397500000,412500000,442500000,472500000,502500000,630000000,757500000,870000000,997500000,1125000000,1252500000,1380000000,1492500000,1590000000,1717500000];
+  const tiers=[690,1160,1620,2090,2550,3020,3480,3950,4410,4880,7200,10000,20000,50000,100000,150000,200000,300000,400000,500000];
+  for (let i=0;i<tiers.length;i++) { if (area<=tiers[i]) return (type==='p'?fp:fc)[i]; }
+  return type==='p' ? Math.floor(area/10000)*15000000 : Math.floor(area/10000)*22500000;
+}
+
+// ============================================================
+// TEXT ENCODER HELPER
+// ============================================================
+function toBytes(str) {
+  return Array.from(new TextEncoder().encode(str));
+}
+
+// ============================================================
+// REAL TRANSACTION: createEscrowV1
+// ============================================================
+window.createEscrowV1 = async function() {
+  document.getElementById('escrow-id-box').style.display='none';
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+
+  const surveyor = document.getElementById('surveyor-addr').value.trim();
+  if (!surveyor || !surveyor.startsWith('0x')) { alert('Please enter a valid surveyor wallet address.'); return; }
+
+  const jobId   = document.getElementById('job-id').value.trim() || 'JOB-001';
+  const desc    = document.getElementById('escrow-desc').value.trim() || 'Survey';
+  const areaN   = parseInt(document.getElementById('escrow-area').value) || 500;
+  const typeVal = document.getElementById('escrow-type').value === 'p' ? 0 : 1;
+  const feeMist = calcFeeMist(areaN, document.getElementById('escrow-type').value);
+
+  showOutput('escrow-output', '⏳ Building transaction — create_escrow (no deadline)...\nWaiting for wallet approval...', 'info');
+
+  try {
+    const coinId = await getCoinForFee(feeMist);
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+
+    // Split exact fee from coin
+    const [paymentCoin] = tx.splitCoins(tx.object(coinId), [tx.pure.u64(feeMist)]);
+
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::create_escrow`,
+      arguments: [
+        paymentCoin,
+        tx.pure.address(surveyor),
+        tx.pure.address(SURCON_ADDR),
+        tx.pure.vector('u8', toBytes(jobId)),
+        tx.pure.vector('u8', toBytes(desc)),
+        tx.pure.u64(areaN),
+        tx.pure.u8(typeVal),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+    const digest = result.digest;
+
+    // Extract new escrow object ID from created objects
+    const created = result.objectChanges?.filter(o => o.type === 'created' && o.objectType?.includes('SurveyEscrow'));
+    const escrowId = created?.[0]?.objectId ?? 'Check explorer for object ID';
+
+    showOutput('escrow-output',
+      `✅ Escrow created (V1 — no deadline)!\n` +
+      `Tx digest: ${digest}\n` +
+      `Fee locked: ${(feeMist/1e9).toFixed(3)} SUI`
+    );
+    showEscrowIdBox(escrowId);
+    showToast('🔒 Escrow created!', jobId + ' · ' + (feeMist/1e9).toFixed(3) + ' SUI locked on-chain.', 'green', 6000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('escrow-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: createEscrowV2 (with deadline)
+// ============================================================
+window.createEscrowV2 = async function() {
+  document.getElementById('escrow-id-box').style.display='none';
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+
+  const deadlineVal = document.getElementById('escrow-deadline').value;
+  if (!deadlineVal) { alert('Please pick a deadline date first, or use "Create escrow (no deadline)" instead.'); return; }
+
+  const chosen = new Date(deadlineVal + 'T00:00:00');
+  const today  = new Date(); today.setHours(0,0,0,0);
+  if (chosen <= today) { alert('Deadline must be a future date.'); return; }
+
+  const surveyor = document.getElementById('surveyor-addr').value.trim();
+  if (!surveyor || !surveyor.startsWith('0x')) { alert('Please enter a valid surveyor wallet address.'); return; }
+
+  const jobId       = document.getElementById('job-id').value.trim() || 'JOB-001';
+  const desc        = document.getElementById('escrow-desc').value.trim() || 'Survey';
+  const areaN       = parseInt(document.getElementById('escrow-area').value) || 500;
+  const typeVal     = document.getElementById('escrow-type').value === 'p' ? 0 : 1;
+  const feeMist     = calcFeeMist(areaN, document.getElementById('escrow-type').value);
+  const deadlineLabel = chosen.toLocaleDateString('en-NG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const diff = Math.round((chosen - today) / (1000*60*60*24));
+
+  showOutput('escrow-output', `⏳ Building transaction — create_escrow_v2\nDeadline: ${deadlineLabel}\nWaiting for wallet approval...`, 'info');
+
+  try {
+    const coinId = await getCoinForFee(feeMist);
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+
+    const [paymentCoin] = tx.splitCoins(tx.object(coinId), [tx.pure.u64(feeMist)]);
+
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::create_escrow_v2`,
+      arguments: [
+        paymentCoin,
+        tx.pure.address(surveyor),
+        tx.pure.address(SURCON_ADDR),
+        tx.pure.vector('u8', toBytes(jobId)),
+        tx.pure.vector('u8', toBytes(desc)),
+        tx.pure.u64(areaN),
+        tx.pure.u8(typeVal),
+        tx.object(CLOCK_ID),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+    const digest = result.digest;
+    const created = result.objectChanges?.filter(o => o.type === 'created' && o.objectType?.includes('SurveyEscrow'));
+    const escrowId = created?.[0]?.objectId ?? 'Check explorer for object ID';
+
+    showOutput('escrow-output',
+      `✅ Escrow created with deadline!\n` +
+      `📅 Deadline: ${deadlineLabel} (${diff} days)\n` +
+      `Fee locked: ${(feeMist/1e9).toFixed(3)} SUI\n` +
+      `Tx: ${digest}`
+    );
+    showEscrowIdBox(escrowId);
+    const cliDeadline = document.getElementById('cli-deadline-val');
+    if (cliDeadline) cliDeadline.textContent = chosen.getTime();
+    showToast('⏰ Escrow with deadline created!', jobId + ' · Deadline: ' + deadlineLabel, 'green', 6000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('escrow-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: submitRedCopyV1
+// ============================================================
+window.submitRedCopyV1 = async function() {
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+  const escrowId = document.getElementById('doc-escrow-id').value.trim();
+  const hash     = document.getElementById('doc-hash').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+  if (!hash) { alert('Please enter a document hash.'); return; }
+
+  showOutput('doc-output', '⏳ Submitting hash on-chain (submit_red_copy)...\nWaiting for wallet approval...', 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::submit_red_copy`,
+      arguments: [
+        tx.object(escrowId),
+        tx.pure.vector('u8', toBytes(hash)),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+    showOutput('doc-output',
+      `✅ Red Copy submitted on-chain! (V1)\n` +
+      `Hash stored · Status: Pending → Submitted\n` +
+      `Tx: ${result.digest}`
+    );
+    showToast('📄 Document submitted!', 'Hash stored on-chain. Regulatory body notified via event.', 'green', 5000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('doc-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: submitRedCopyV2 (full metadata)
+// ============================================================
+window.submitRedCopyV2 = async function() {
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+  const escrowId = document.getElementById('doc-escrow-id').value.trim();
+  const hash     = document.getElementById('doc-hash').value.trim();
+  const name     = document.getElementById('doc-name').value.trim() || 'document.dwg';
+  const fmt      = document.getElementById('doc-format').value || 'DWG';
+  const url      = document.getElementById('doc-url').value.trim() || '';
+
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+  if (!hash) { alert('Please enter a document hash (IPFS CID or Walrus blob ID).'); return; }
+
+  showOutput('doc-output', `⏳ Submitting document metadata on-chain (submit_red_copy_v2)...\nFile: ${name} (${fmt})\nWaiting for wallet approval...`, 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::submit_red_copy_v2`,
+      arguments: [
+        tx.object(escrowId),
+        tx.pure.vector('u8', toBytes(hash)),
+        tx.pure.vector('u8', toBytes(name)),
+        tx.pure.vector('u8', toBytes(fmt)),
+        tx.pure.vector('u8', toBytes(url)),
+        tx.object(CLOCK_ID),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+    showOutput('doc-output',
+      `✅ Document submitted on-chain! (V2)\n` +
+      `File: ${name} (${fmt})\n` +
+      `Status: Pending → Submitted\n` +
+      `SURCON/NIS notified via RedCopySubmitted event!\n` +
+      `Tx: ${result.digest}`
+    );
+    showToast('📁 Document submitted (V2)!', name + ' · SURCON/NIS notified on-chain.', 'green', 6000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('doc-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: confirmRelease (70/30 split)
+// ============================================================
+window.confirmRelease = async function() {
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+  const escrowId = document.getElementById('release-escrow-id').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+
+  if (!confirm('Release payment? This will send 30% to the Surveyor and 70% to SURCON/NIS. This cannot be undone.')) return;
+
+  showOutput('release-output', '⏳ Processing confirm_and_release...\nWaiting for wallet approval...', 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::confirm_and_release`,
+      arguments: [ tx.object(escrowId) ],
+    });
+
+    const result = await signAndExecute(tx);
+
+    // Read amounts from events if available
+    const events = result.events ?? [];
+    const completedEvt = events.find(e => e.type?.includes('EscrowCompleted'));
+    const surveyorAmt = completedEvt?.parsedJson?.surveyor_amount;
+    const regulatoryAmt = completedEvt?.parsedJson?.regulatory_amount;
+    const surStr = surveyorAmt   ? (surveyorAmt/1e9).toFixed(4)+' SUI (30%)'   : '30%';
+    const regStr = regulatoryAmt ? (regulatoryAmt/1e9).toFixed(4)+' SUI (70%)' : '70%';
+
+    showOutput('release-output',
+      `✅ Payment released!\n` +
+      `→ Surveyor received: ${surStr}\n` +
+      `→ SURCON/NIS received: ${regStr}\n` +
+      `→ Status: Completed ✓\n` +
+      `Tx: ${result.digest}`
+    );
+    showToast('✅ Payment released!', 'Surveyor 30% + SURCON 70% sent on-chain.', 'green', 8000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('release-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: cancelEscrow
+// ============================================================
+window.cancelEscrow = async function() {
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+  const escrowId = document.getElementById('cancel-escrow-id').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+
+  if (!confirm('Cancel this escrow? Full payment will be refunded to your wallet. This cannot be undone.')) return;
+
+  showOutput('cancel-output', '⏳ Processing cancel_escrow...\nWaiting for wallet approval...', 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::cancel_escrow`,
+      arguments: [ tx.object(escrowId) ],
+    });
+
+    const result = await signAndExecute(tx);
+    showOutput('cancel-output',
+      `✅ Escrow cancelled!\n` +
+      `Full payment refunded to your wallet.\n` +
+      `Status: Cancelled\n` +
+      `Tx: ${result.digest}`
+    );
+    showToast('❌ Escrow cancelled', 'Full refund sent to your wallet.', '', 5000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('cancel-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: claimExpired
+// ============================================================
+window.claimExpired = async function() {
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+  const escrowId = document.getElementById('expire-escrow-id').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+
+  showOutput('expire-output', '⏳ Checking deadline and claiming refund...\nWaiting for wallet approval...', 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::claim_expired_refund`,
+      arguments: [
+        tx.object(escrowId),
+        tx.object(CLOCK_ID),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+    showOutput('expire-output',
+      `✅ Refund claimed!\n` +
+      `Surveyor missed the agreed deadline.\n` +
+      `Full payment refunded to your wallet.\n` +
+      `Status: Expired\n` +
+      `Tx: ${result.digest}`
+    );
+    showToast('⏰ Expired refund claimed!', 'Full payment returned to your wallet.', '', 5000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('expire-output', '❌ Error: ' + err.message, 'warning');
+  }
+};
+
+// ============================================================
+// EXPOSE connectWallet to global scope for the button
+// ============================================================
+window.connectWallet    = connectWallet;
+window.disconnectWallet = disconnectWallet;
+
+// ============================================================
+// REAL TRANSACTION: regulatory_approve (SURCON approves on-chain)
+// V4: moves escrow SUBMITTED → APPROVED, unlocking client release
+// ============================================================
+window.regulatoryApprove = async function() {
+  if (!walletAddress) { alert('Please connect your SURCON wallet first.'); return; }
+  const escrowId = document.getElementById('surcon-escrow-id').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+
+  if (!confirm('Approve this escrow on-chain?\n\nThis calls regulatory_approve and moves the escrow from SUBMITTED → APPROVED.\n\nThe client will then be able to release the 70/30 payment.\n\nThis transaction must be signed by the SURCON wallet.')) return;
+
+  showSurconApproveOutput('⏳ Building regulatory_approve transaction...\nWaiting for SURCON wallet approval...', 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::regulatory_approve`,
+      arguments: [
+        tx.object(escrowId),
+        tx.object(CLOCK_ID),   // &Clock required by V4
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+
+    // Read approval event
+    const events = result.events ?? [];
+    const approvedEvt = events.find(e => e.type?.includes('EscrowApproved'));
+    const approvedAt  = approvedEvt?.parsedJson?.approved_at;
+    const timeStr = approvedAt ? new Date(parseInt(approvedAt)).toLocaleString('en-NG') : 'now';
+
+    showSurconApproveOutput(
+      `✅ Document approved on-chain!\n` +
+      `Escrow: ${escrowId}\n` +
+      `State: SUBMITTED → APPROVED\n` +
+      `Approved at: ${timeStr}\n` +
+      `The client can now call confirm_and_release.\n` +
+      `Tx: ${result.digest}`,
+      'success'
+    );
+
+    // Update surcon-pending-count
+    const pCount = document.getElementById('surcon-pending-count');
+    if (pCount) pCount.textContent = Math.max(0, parseInt(pCount.textContent||'0') - 1);
+    const aCount = document.getElementById('surcon-approved-count');
+    if (aCount) aCount.textContent = parseInt(aCount.textContent||'0') + 1;
+
+    addSurconLog(escrowId.slice(0,10)+'...', 'client', 'surveyor');
+
+    showToast(
+      '🏛️ SURCON approved on-chain!',
+      escrowId.slice(0,16)+'... · APPROVED · Client can now release payment.',
+      'green', 8000
+    );
+
+  } catch (err) {
+    console.error(err);
+    showSurconApproveOutput('❌ Transaction failed:\n' + err.message + '\n\nMake sure:\n• This wallet is the regulatory_body of the escrow\n• The escrow is in SUBMITTED state', 'warning');
+  }
+};
+
+function showSurconApproveOutput(msg, type) {
+  const el = document.getElementById('surcon-approve-output');
+  el.className = 'alert ' + (type === 'success' ? 'success' : type === 'info' ? 'info' : 'warning');
+  el.textContent = msg;
+  el.style.display = 'flex';
+  el.style.whiteSpace = 'pre-line';
+}
+
+// ============================================================
+// REAL TRANSACTION: raise_dispute (client or surveyor)
+// V4: freezes escrow — only SURCON can resolve it
+// ============================================================
+window.raiseDispute = async function() {
+  if (!walletAddress) { alert('Please connect your wallet first.'); return; }
+  const escrowId = document.getElementById('dispute-escrow-id').value.trim();
+  const reason   = document.getElementById('dispute-reason').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+  if (!reason) { alert('Please enter a reason for the dispute.'); return; }
+
+  if (!confirm(
+    'Raise a dispute on this escrow?\n\n' +
+    'This freezes the escrow — neither client nor surveyor can release or cancel it.\n' +
+    'Only SURCON/NIS can resolve it with a custom split.\n\n' +
+    'Reason: ' + reason
+  )) return;
+
+  showOutput('dispute-output', '⏳ Building raise_dispute transaction...\nWaiting for wallet approval...', 'info');
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::raise_dispute`,
+      arguments: [
+        tx.object(escrowId),
+        tx.pure.vector('u8', toBytes(reason)),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+
+    showOutput('dispute-output',
+      `⚠️ Dispute raised on-chain!\n` +
+      `Escrow: ${escrowId}\n` +
+      `State: → DISPUTED (frozen)\n` +
+      `Reason: ${reason}\n` +
+      `SURCON/NIS has been notified via DisputeRaised event.\n` +
+      `Only SURCON can resolve this with resolve_dispute.\n` +
+      `Tx: ${result.digest}`
+    );
+    showToast('⚠️ Dispute raised!', 'Escrow frozen. SURCON/NIS will review and resolve.', '', 7000);
+
+  } catch (err) {
+    console.error(err);
+    showOutput('dispute-output',
+      '❌ Transaction failed:\n' + err.message +
+      '\n\nNote: Disputes can only be raised from SUBMITTED or APPROVED state.\nOnly the client or surveyor of the escrow can raise a dispute.',
+      'warning'
+    );
+  }
+};
+
+// ============================================================
+// REAL TRANSACTION: resolve_dispute (SURCON only)
+// V4: SURCON sets surveyor% — remainder refunded to client
+// ============================================================
+window.resolveDispute = async function() {
+  if (!walletAddress) { alert('Please connect your SURCON wallet first.'); return; }
+  const escrowId      = document.getElementById('dispute-resolve-escrow-id').value.trim();
+  const surveyorPctRaw = document.getElementById('dispute-surveyor-pct').value;
+  if (!escrowId || !escrowId.startsWith('0x')) { alert('Please enter a valid escrow object ID.'); return; }
+  const surveyorPct = parseInt(surveyorPctRaw);
+  if (isNaN(surveyorPct) || surveyorPct < 0 || surveyorPct > 100) {
+    alert('Please enter a valid percentage between 0 and 100.');
+    return;
+  }
+  const clientPct = 100 - surveyorPct;
+
+  if (!confirm(
+    'Resolve this dispute on-chain?\n\n' +
+    `→ Surveyor receives: ${surveyorPct}%\n` +
+    `→ Client receives:   ${clientPct}%\n\n` +
+    'This cannot be undone. The escrow will be marked COMPLETED.'
+  )) return;
+
+  const el = document.getElementById('dispute-resolve-output');
+  el.className = 'alert info'; el.textContent = '⏳ Building resolve_dispute transaction...\nWaiting for SURCON wallet approval...';
+  el.style.display = 'flex'; el.style.whiteSpace = 'pre-line';
+
+  try {
+    const tx = new Transaction();
+    tx.setSender(walletAddress);
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE}::resolve_dispute`,
+      arguments: [
+        tx.object(escrowId),
+        tx.pure.u64(surveyorPct),
+      ],
+    });
+
+    const result = await signAndExecute(tx);
+
+    // Read PartialRefundIssued event
+    const events = result.events ?? [];
+    const refundEvt = events.find(e => e.type?.includes('PartialRefundIssued'));
+    const surAmt = refundEvt?.parsedJson?.surveyor_amount;
+    const cliAmt = refundEvt?.parsedJson?.client_amount;
+    const surStr = surAmt ? (surAmt/1e9).toFixed(4)+' SUI' : surveyorPct+'%';
+    const cliStr = cliAmt ? (cliAmt/1e9).toFixed(4)+' SUI' : clientPct+'%';
+
+    el.className = 'alert success';
+    el.textContent =
+      `✅ Dispute resolved on-chain!\n` +
+      `Escrow: ${escrowId}\n` +
+      `→ Surveyor received: ${surStr} (${surveyorPct}%)\n` +
+      `→ Client received:   ${cliStr} (${clientPct}%)\n` +
+      `State: COMPLETED\n` +
+      `Tx: ${result.digest}`;
+
+    showToast('⚖️ Dispute resolved!', `Surveyor ${surveyorPct}% · Client ${clientPct}% · Escrow completed.`, 'green', 7000);
+
+  } catch (err) {
+    console.error(err);
+    el.className = 'alert warning';
+    el.textContent = '❌ Transaction failed:\n' + err.message +
+      '\n\nMake sure:\n• This wallet is the regulatory_body of the escrow\n• The escrow is in DISPUTED state';
+  }
+};
+
+// ============================================================
+// Load storage URL from chain for SURCON document download
+// ============================================================
+window.surconDownloadDocFromEscrow = async function() {
+  const escrowId = document.getElementById('surcon-escrow-id').value.trim();
+  if (!escrowId || !escrowId.startsWith('0x')) {
+    alert('Please enter the escrow Object ID first.');
+    return;
+  }
+  showSurconApproveOutput('⏳ Fetching escrow data from chain...', 'info');
+  try {
+    const obj = await suiClient.getObject({
+      id: escrowId,
+      options: { showContent: true, showDisplay: true }
+    });
+    // Try to find storage_url from dynamic fields
+    const dynFields = await suiClient.getDynamicFields({ parentId: escrowId });
+    let storageUrl = '';
+    for (const field of dynFields.data) {
+      if (field.name?.value === 'DocumentFieldsKey' || field.objectType?.includes('DocumentFields')) {
+        const df = await suiClient.getDynamicFieldObject({ parentId: escrowId, name: field.name });
+        const content = df?.data?.content?.fields;
+        storageUrl = content?.value?.fields?.storage_url ?? content?.storage_url ?? '';
+        if (storageUrl && Array.isArray(storageUrl)) {
+          storageUrl = new TextDecoder().decode(new Uint8Array(storageUrl));
+        }
+        break;
+      }
+    }
+    if (storageUrl) {
+      showSurconApproveOutput('✅ Storage URL found: ' + storageUrl + '\n\nDownloading...', 'success');
+      const a = document.createElement('a');
+      a.href = storageUrl; a.target = '_blank'; a.download = 'survey_document';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } else {
+      showSurconApproveOutput('ℹ️ No storage URL found in dynamic fields.\nThis escrow may have used V1 (hash only) submission.\nCheck the on-chain hash: ' + (obj?.data?.content?.fields?.red_copy_hash || 'not found'), 'info');
+    }
+  } catch (err) {
+    console.error(err);
+    showSurconApproveOutput('❌ Could not fetch escrow: ' + err.message, 'warning');
+  }
+};
+
+// On page load: update wallet UI to "not connected" state
+window.addEventListener('load', () => {
+  updateWalletUI(null);
+});
+
+</script>
+
+<script>
+// ===== FEE DATA =====
+const fp=[150000,190000,210000,230000,250000,265000,275000,295000,315000,335000,420000,505000,580000,665000,750000,835000,920000,995000,1060000,1145000];
+const fc=[225000,285000,315000,345000,375000,397500,412500,442500,472500,502500,630000,757500,870000,997500,1125000,1252500,1380000,1492500,1590000,1717500];
+const tiers=[[690,'0–690 m²'],[1160,'691–1,160 m²'],[1620,'1,161–1,620 m²'],[2090,'1,621–2,090 m²'],[2550,'2,091–2,550 m²'],[3020,'2,551–3,020 m²'],[3480,'3,021–3,480 m²'],[3950,'3,481–3,950 m²'],[4410,'3,951–4,410 m²'],[4880,'4,411–4,880 m²'],[7200,'4,881–7,200 m²'],[10000,'7,200 m²–1 Ha'],[20000,'1–2 Ha'],[50000,'2–5 Ha'],[100000,'5–10 Ha'],[150000,'10–15 Ha'],[200000,'15–20 Ha'],[300000,'20–30 Ha'],[400000,'30–40 Ha'],[500000,'40–50 Ha']];
+
+function fmt(n){return '₦'+Math.round(n).toLocaleString();}
+
+function getFeeIndex(area){
+  for(let i=0;i<tiers.length;i++){if(area<=tiers[i][0])return i;}
+  return tiers.length-1;
+}
+
+function calcFee(){
+  const a=parseFloat(document.getElementById('area').value)||0;
+  const t=document.getElementById('landtype').value;
+  const i=getFeeIndex(a);
+  const f=t==='p'?fp[i]:fc[i];
+  const r=Math.round(f*0.7),s=Math.round(f*0.3);
+  document.getElementById('fee-ngn').textContent=fmt(f);
+  document.getElementById('fee-reg').textContent=fmt(r);
+  document.getElementById('fee-sur').textContent=fmt(s);
+  document.getElementById('split-sur').textContent=fmt(s);
+  document.getElementById('split-reg').textContent=fmt(r);
+  document.getElementById('tier-badge').textContent='⚡ Tier '+(i+1)+' — '+tiers[i][1];
+}
+
+function updateEscrowFee(){
+  const a=parseFloat(document.getElementById('escrow-area').value)||0;
+  const t=document.getElementById('escrow-type').value;
+  const i=getFeeIndex(a);
+  const f=t==='p'?fp[i]:fc[i];
+  document.getElementById('escrow-fee-display').value=fmt(f)+' ('+(f/1000000000).toFixed(3)+' SUI)';
+}
+
+// ===== TAB NAVIGATION (see updated version below with SURCON support) =====
+function _legacyShowTab_unused(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const names=['calculator','escrow','surveyor','release','status'];
+  const idx=names.indexOf(name);
+  if(idx>=0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+
+// ===== FILE UPLOAD =====
+function handleFileUpload(input){
+  if(input.files&&input.files[0]){
+    const file=input.files[0];
+    const area=document.getElementById('upload-area');
+    area.classList.add('has-file');
+    area.innerHTML='<div style="font-size:2rem;margin-bottom:8px">✅</div><div style="font-size:13px;font-weight:500;color:var(--green-dark)">'+file.name+'</div><div style="font-size:11px;color:var(--text-muted)">'+Math.round(file.size/1024)+' KB · '+file.type+'</div>';
+    document.getElementById('doc-name').value=file.name;
+    const ext=file.name.split('.').pop().toUpperCase();
+    const fmt_sel=document.getElementById('doc-format');
+    for(let i=0;i<fmt_sel.options.length;i++){
+      if(fmt_sel.options[i].value===ext){fmt_sel.selectedIndex=i;break;}
+    }
+    // Simulate hash generation
+    document.getElementById('doc-hash').value='QmSurvey'+Math.random().toString(36).substr(2,20).toUpperCase();
+    document.getElementById('doc-url').value='https://ipfs.io/ipfs/QmSurvey'+Math.random().toString(36).substr(2,16);
+  }
+}
+
+// ===== ESCROW ACTIONS =====
+function showOutput(id, msg, type='success'){
+  const el=document.getElementById(id);
+  el.className='alert '+(type==='success'?'success':type==='info'?'info':'warning');
+  el.textContent=msg;
+  el.style.display='flex';
+}
+
+// Last generated escrow ID (for copy & pre-fill)
+let _lastEscrowId = '';
+
+function showEscrowIdBox(id){
+  _lastEscrowId = id;
+  document.getElementById('escrow-id-display').textContent = id;
+  document.getElementById('escrow-explorer-link').href =
+    'https://suiexplorer.com/object/'+id+'?network=testnet';
+  document.getElementById('escrow-id-box').style.display = 'block';
+}
+
+function copyEscrowId(){
+  navigator.clipboard.writeText(_lastEscrowId).then(()=>{
+    const btn = document.getElementById('copy-escrow-btn');
+    btn.textContent = '✓ Copied!';
+    btn.style.background = 'var(--green-light)';
+    btn.style.color = 'var(--green-dark)';
+    setTimeout(()=>{btn.textContent='📋 Copy ID';btn.style.background='';btn.style.color='';},2000);
+  });
+}
+
+function copySurcon(btn){
+  navigator.clipboard.writeText('0xf44f68ac7f90d87796c1e2d654be2b00651d25cf7ec83185519f8c939ff1307b').then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(()=>{btn.textContent=orig;},2000);
+  });
+}
+
+function goToUpload(){
+  // Pre-fill the doc-escrow-id field with the last created escrow ID
+  if(_lastEscrowId) document.getElementById('doc-escrow-id').value = _lastEscrowId;
+  showTab('surveyor');
+}
+
+// createEscrowV1, createEscrowV2, submitRedCopyV1, submitRedCopyV2,
+// confirmRelease, cancelEscrow, claimExpired
+// — all defined in the ES module block above. No mocks needed.
+
+function updateDeadlinePreview(){
+  const val = document.getElementById('escrow-deadline').value;
+  const preview = document.getElementById('deadline-preview');
+  const previewText = document.getElementById('deadline-preview-text');
+  const daysDisplay = document.getElementById('deadline-days-display');
+  if(!val){ preview.style.display='none'; daysDisplay.value=''; return; }
+  const chosen = new Date(val + 'T00:00:00');
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const diff   = Math.round((chosen - today) / (1000*60*60*24));
+  if(diff < 0){
+    daysDisplay.value = 'Past date';
+    daysDisplay.style.color = 'var(--red)';
+    preview.style.display = 'none';
+    return;
+  }
+  daysDisplay.value = diff + (diff===1?' day':' days') + ' from today';
+  daysDisplay.style.color = 'var(--green-dark)';
+  previewText.textContent = chosen.toLocaleDateString('en-NG',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' (' + diff + ' days)';
+  preview.style.display = 'block';
+}
+
+// (createEscrowV2 handled in ES module above)
+
+// (submitRedCopyV1 and submitRedCopyV2 handled in ES module above)
+
+// (confirmRelease, cancelEscrow, claimExpired handled in ES module above)
+
+function downloadFromWalrus(){
+  const url = document.getElementById('doc-url').value.trim();
+  const btn = document.getElementById('download-doc-btn');
+  if(!url){ alert('Please enter a Walrus storage URL first.'); return; }
+  btn.textContent = '⏳ Fetching…';
+  btn.disabled = true;
+  // Derive a filename from the URL or use a default
+  const parts = url.split('/');
+  const rawName = parts[parts.length-1] || 'survey_document';
+  const filename = rawName.includes('.') ? rawName : rawName + '.pdf';
+  // Trigger the download — browser fetches the Walrus URL directly to device
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>{
+    btn.textContent = '✓ Downloaded';
+    btn.style.background='var(--green-light)';
+    btn.style.color='var(--green-dark)';
+    btn.disabled = false;
+    setTimeout(()=>{btn.textContent='⬇ Download';btn.style.background='';btn.style.color='';},3000);
+  },800);
+}
+calcFee();
+updateEscrowFee();
+
+// ===== SURCON CONSTANTS =====
+const SURCON_WALLET = '0xf44f68ac7f90d87796c1e2d654be2b00651d25cf7ec83185519f8c939ff1307b';
+const SURCON_SHORT  = '0xf44f68...307b';
+
+// ===== TOAST NOTIFICATION =====
+let _toastTimer = null;
+function showToast(title, body, color='', duration=6000){
+  const t = document.getElementById('notif-toast');
+  document.getElementById('notif-title').textContent = title;
+  document.getElementById('notif-body').textContent = body;
+  t.className = 'notif-toast' + (color ? ' '+color : '');
+  t.style.display = 'block';
+  if(_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(dismissToast, duration);
+}
+function dismissToast(){
+  document.getElementById('notif-toast').style.display='none';
+}
+
+// ===== UPDATED showTab — handles SURCON tab index correctly =====
+function showTab(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const panel = document.getElementById('tab-'+name);
+  if(panel) panel.classList.add('active');
+
+  const names=['calculator','escrow','surveyor','release','status'];
+  const idx=names.indexOf(name);
+  if(idx>=0){
+    const tabs = document.querySelectorAll('.tab:not(.tab-surcon)');
+    if(tabs[idx]) tabs[idx].classList.add('active');
+  } else if(name==='surcon'){
+    document.getElementById('tab-btn-surcon').classList.add('active');
+  }
+}
+
+// ===== SURCON WALLET DETECTION =====
+// Simulates wallet detection — replace with real window.suiWallet check
+function checkWalletForSurcon(address){
+  const btn = document.getElementById('tab-btn-surcon');
+  if(address && address.toLowerCase().startsWith('0xf44f68')){
+    btn.style.display = 'flex';
+    document.getElementById('surcon-connected-addr').textContent = address.length > 20
+      ? address.slice(0,8)+'...'+address.slice(-4)
+      : address;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+// Auto-detect: for demo, simulate SURCON wallet is connected
+// In production: call checkWalletForSurcon(connectedWalletAddress) after wallet connect
+(function detectWalletOnLoad(){
+  // Demo mode: SURCON panel visible. Remove or replace this with real wallet detection.
+  checkWalletForSurcon(SURCON_WALLET);
+})();
+
+// ===== SURCON APPROVE =====
+let _approvedCount = 0;
+const _approvedJobs = {};
+
+function surconApproveDemo(jobId, cardId, clientAddr, surveyorAddr){
+  if(_approvedJobs[jobId]){
+    alert('This escrow has already been approved.');
+    return;
+  }
+
+  const card = document.getElementById(cardId);
+  const approveBtn = card.querySelector('.btn-approve');
+  approveBtn.textContent = '⏳ Sending approvals...';
+  approveBtn.disabled = true;
+
+  setTimeout(()=>{
+    // Mark approved in UI
+    _approvedJobs[jobId] = true;
+    _approvedCount++;
+
+    // Update the card
+    card.querySelector('.erc-status-dot').className = 'erc-status-dot approved';
+    card.querySelector('.job-badge').className = 'job-badge completed';
+    card.querySelector('.job-badge').textContent = 'Approved ✓';
+    approveBtn.textContent = '✅ Approved';
+    approveBtn.style.background='var(--green-light)';
+    approveBtn.style.color='var(--green-dark)';
+    approveBtn.style.borderColor='#9FE1CB';
+
+    // Update counters
+    const pending = document.querySelectorAll('.erc-status-dot.awaiting').length;
+    document.getElementById('surcon-pending-count').textContent = pending;
+    document.getElementById('surcon-approved-count').textContent = _approvedCount;
+
+    // Log in SURCON notif log
+    addSurconLog(jobId, clientAddr, surveyorAddr);
+
+    // Simulate in-app notifications to client and surveyor
+    notifyClientApproval(jobId, clientAddr);
+
+  }, 1800);
+}
+
+function addSurconLog(jobId, clientAddr, surveyorAddr){
+  const log = document.getElementById('surcon-notif-log');
+  // Clear placeholder if first entry
+  const placeholder = log.querySelector('.inbox-item');
+  if(placeholder && placeholder.textContent.includes('No approvals sent')) placeholder.remove();
+
+  const now = new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+  log.insertAdjacentHTML('afterbegin', `
+    <div class="inbox-item inbox-unread">
+      <div class="inbox-icon">✅</div>
+      <div class="inbox-text">
+        <strong>${jobId} — Approval sent</strong><br>
+        Client <span style="font-family:var(--mono);font-size:10px;">${clientAddr}</span> notified: "SURCON has approved your document. You may now release payment."<br>
+        Surveyor <span style="font-family:var(--mono);font-size:10px;">${surveyorAddr}</span> notified: "Your document has been approved by SURCON/NIS."
+        <div class="inbox-time">Sent at ${now} · Off-chain signal</div>
+      </div>
+    </div>
+  `);
+}
+
+// ===== CLIENT / SURVEYOR TOAST NOTIFICATIONS =====
+// These fire automatically when SURCON approves — simulating what the other roles see
+// when they are connected. In production, this would be a real-time event / polling.
+function notifyClientApproval(jobId, clientAddr){
+  // Notification 1: toast to current user (simulates client seeing it)
+  showToast(
+    '🏛️ SURCON has approved your document!',
+    jobId + ' · Your survey document has been reviewed and approved by SURCON/NIS. You can now go to "Release Payment" and complete the transaction.',
+    'green',
+    8000
+  );
+
+  // Schedule a second notification (simulates surveyor seeing it a moment later)
+  setTimeout(()=>{
+    showToast(
+      '🏛️ SURCON approval — surveyor notification',
+      jobId + ' · Your submitted document has been approved by SURCON/NIS. Await client payment release — 30% will be transferred to your wallet.',
+      '',
+      8000
+    );
+  }, 9000);
+}
+
+// ===== SURCON DOCUMENT DOWNLOAD =====
+function surconDownloadDoc(jobId, filename){
+  // In production: fetch the actual Walrus/IPFS URL stored on-chain for this escrow
+  showToast('⬇ Downloading document...', jobId + ' · ' + filename + ' — fetching from Walrus/IPFS storage...', 'gold', 3000);
+  // Simulate download trigger
+  setTimeout(()=>{
+    showToast('✓ Document ready', filename + ' has been downloaded to your device for review.', 'green', 4000);
+  }, 3000);
+}
+
+// confirmRelease is defined in the ES module — SURCON toast notifications below
+</script>
+</body>
 </html>
